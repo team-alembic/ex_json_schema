@@ -229,7 +229,9 @@ defmodule ExJsonSchema.Schema do
       get_ref_schema_with_schema(:lists.nth(idx + 1, schema), path, ref)
     catch
       :error, :function_clause ->
-        raise InvalidSchemaError, message: "reference #{ref_to_string(ref)} could not be resolved"
+        # Try interpreting the number as a string since that is possible (ie HTTP status codes)
+        # See https://tools.ietf.org/html/rfc6901
+        get_ref_schema_with_schema(schema, [to_string(idx) | path], ref)
     end
   end
 
